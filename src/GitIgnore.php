@@ -65,6 +65,8 @@ class GitIgnore
      */
     public function addEntry($file)
     {
+        $file = $this->normalizePath($file);
+
         $addToGitIgnore = true;
         foreach ($this->directoriesToIgnoreEntirely as $directory) {
             if (substr($file, 0, strlen($directory)) === $directory) {
@@ -84,6 +86,8 @@ class GitIgnore
      */
     public function removeEntry($file)
     {
+        $file = $this->normalizePath($file);
+
         $index = array_search($file, $this->lines);
 
         if ($index !== false) {
@@ -140,5 +144,19 @@ class GitIgnore
                 $this->hasChanges = true;
             }
         }
+    }
+
+    /**
+     * @param $path
+     * @return string
+     */
+    private function normalizePath($path)
+    {
+        $path = str_replace('\\', '/', $path);
+        $path = preg_replace('|(?<=.)/+|', '/', $path);
+        if (':' === substr($path, 1, 1)) {
+            $path = ucfirst($path);
+        }
+        return $path;
     }
 }

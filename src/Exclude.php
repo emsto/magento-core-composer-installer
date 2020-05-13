@@ -39,6 +39,8 @@ class Exclude
      */
     public function exclude($filePath)
     {
+        $filePath = $this->normalizePath($filePath);
+
         foreach ($this->excludes as $exclude) {
 
             if ($this->isExcludeDir($exclude)) {
@@ -62,5 +64,19 @@ class Exclude
         return is_dir(
             sprintf('%s/%s', rtrim($this->sourcePath, '/'), ltrim('/', $exclude))
         );
+    }
+
+    /**
+     * @param $path
+     * @return string
+     */
+    private function normalizePath($path)
+    {
+        $path = str_replace('\\', '/', $path);
+        $path = preg_replace('|(?<=.)/+|', '/', $path);
+        if (':' === substr($path, 1, 1)) {
+            $path = ucfirst($path);
+        }
+        return $path;
     }
 }
